@@ -68,18 +68,28 @@ if ($defaultExpireDateEnabled) {
 $outgoingServer2serverShareEnabled = $config->getAppValue('files_sharing', 'outgoing_server2server_share_enabled', 'yes') === 'yes';
 
 $countOfDataLocation = 0;
+$user = \OC::$server->getUserSession()->getUser();
+$uid = $user instanceof \OCP\IUser ? $user->getUID() : '';
+$isAdmin = \OC::$server->getGroupManager()->isAdmin($uid);
 
 $dataLocation = str_replace(OC::$SERVERROOT .'/', '', $config->getSystemValue('datadirectory', ''), $countOfDataLocation);
-if($countOfDataLocation !== 1 || !OC_User::isAdminUser(OC_User::getUser())){
+if($countOfDataLocation !== 1 || !$isAdmin){
 	$dataLocation = false;
+}
+
+$lastConfirmTimestamp = $user->getLastLogin();
+$sessionTime = \OC::$server->getSession()->get('last-password-confirm');
+if (is_int($sessionTime)) {
+	$lastConfirmTimestamp = $sessionTime;
 }
 
 $array = array(
 	"oc_debug" => $config->getSystemValue('debug', false) ? 'true' : 'false',
-	"oc_isadmin" => OC_User::isAdminUser(OC_User::getUser()) ? 'true' : 'false',
+	"oc_isadmin" => $isAdmin ? 'true' : 'false',
 	"oc_dataURL" => is_string($dataLocation) ? "\"".$dataLocation."\"" : 'false',
 	"oc_webroot" => "\"".OC::$WEBROOT."\"",
 	"oc_appswebroots" =>  str_replace('\\/', '/', json_encode($apps_paths)), // Ugly unescape slashes waiting for better solution
+	'nc_lastLogin' => $lastConfirmTimestamp,
 	"datepickerFormatDate" => json_encode($l->l('jsdate', null)),
 	"dayNames" =>  json_encode(
 		array(
