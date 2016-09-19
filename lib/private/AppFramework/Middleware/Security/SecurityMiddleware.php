@@ -32,6 +32,7 @@ namespace OC\AppFramework\Middleware\Security;
 use OC\AppFramework\Middleware\Security\Exceptions\AppNotEnabledException;
 use OC\AppFramework\Middleware\Security\Exceptions\CrossSiteRequestForgeryException;
 use OC\AppFramework\Middleware\Security\Exceptions\NotAdminException;
+use OC\AppFramework\Middleware\Security\Exceptions\NotConfirmedException;
 use OC\AppFramework\Middleware\Security\Exceptions\NotLoggedInException;
 use OC\AppFramework\Middleware\Security\Exceptions\StrictCookieMissingException;
 use OC\AppFramework\Utility\ControllerMethodReflector;
@@ -45,6 +46,7 @@ use OCP\AppFramework\Http\Response;
 use OCP\AppFramework\Http\JSONResponse;
 use OCP\AppFramework\OCSController;
 use OCP\INavigationManager;
+use OCP\ISession;
 use OCP\IURLGenerator;
 use OCP\IRequest;
 use OCP\ILogger;
@@ -71,6 +73,8 @@ class SecurityMiddleware extends Middleware {
 	private $urlGenerator;
 	/** @var ILogger */
 	private $logger;
+	/** @var ISession */
+	private $session;
 	/** @var bool */
 	private $isLoggedIn;
 	/** @var bool */
@@ -84,6 +88,7 @@ class SecurityMiddleware extends Middleware {
 	 * @param INavigationManager $navigationManager
 	 * @param IURLGenerator $urlGenerator
 	 * @param ILogger $logger
+	 * @param ISession $session
 	 * @param string $appName
 	 * @param bool $isLoggedIn
 	 * @param bool $isAdminUser
@@ -94,6 +99,7 @@ class SecurityMiddleware extends Middleware {
 								INavigationManager $navigationManager,
 								IURLGenerator $urlGenerator,
 								ILogger $logger,
+								ISession $session,
 								$appName,
 								$isLoggedIn,
 								$isAdminUser,
@@ -104,6 +110,7 @@ class SecurityMiddleware extends Middleware {
 		$this->appName = $appName;
 		$this->urlGenerator = $urlGenerator;
 		$this->logger = $logger;
+		$this->session = $session;
 		$this->isLoggedIn = $isLoggedIn;
 		$this->isAdminUser = $isAdminUser;
 		$this->contentSecurityPolicyManager = $contentSecurityPolicyManager;
@@ -135,6 +142,13 @@ class SecurityMiddleware extends Middleware {
 				if(!$this->isAdminUser) {
 					throw new NotAdminException();
 				}
+			}
+		}
+
+		if ($this->reflector->hasAnnotation('PasswordConfirmationRequired')) {
+			$lastConfirm = (int) $this->session->get('last-password-confirm');
+			if ($lastConfirm < (time() - 30 * 60 + 15)) { // allow 15 seconds delay
+				throw new NotConfirmedException();
 			}
 		}
 
