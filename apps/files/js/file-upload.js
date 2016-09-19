@@ -313,8 +313,7 @@ OC.Upload = {
 						data.originalFiles.selection = {
 							uploads: [],
 							filesToUpload: data.originalFiles.length,
-							totalBytes: 0,
-							biggestFileBytes: 0
+							totalBytes: 0
 						};
 					}
 					var selection = data.originalFiles.selection;
@@ -367,18 +366,6 @@ OC.Upload = {
 					} else {
 						// add size
 						selection.totalBytes += file.size;
-						// update size of biggest file
-						selection.biggestFileBytes = Math.max(selection.biggestFileBytes, file.size);
-					}
-
-					// check PHP upload limit against biggest file
-					if (selection.biggestFileBytes > $('#upload_limit').val()) {
-						data.textStatus = 'sizeexceedlimit';
-						data.errorThrown = t('files',
-							'Total file size {size1} exceeds upload limit {size2}', {
-							'size1': humanFileSize(selection.biggestFileBytes),
-							'size2': humanFileSize($('#upload_limit').val())
-						});
 					}
 
 					// check free space
