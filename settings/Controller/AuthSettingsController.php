@@ -111,7 +111,9 @@ class AuthSettingsController extends Controller {
 	/**
 	 * @NoAdminRequired
 	 * @NoSubadminRequired
+	 * @PasswordConfirmationRequired
 	 *
+	 * @param string $name
 	 * @return JSONResponse
 	 */
 	public function create($name) {
@@ -136,11 +138,11 @@ class AuthSettingsController extends Controller {
 		$token = $this->generateRandomDeviceToken();
 		$deviceToken = $this->tokenProvider->generateToken($token, $this->uid, $loginName, $password, $name, IToken::PERMANENT_TOKEN);
 
-		return [
+		return new JSONResponse([
 			'token' => $token,
 			'loginName' => $loginName,
 			'deviceToken' => $deviceToken
-		];
+		]);
 	}
 
 	private function getServiceNotAvailableResponse() {
