@@ -40,6 +40,8 @@ trait WebDav {
 
 	/** @var string*/
 	private $davPath = "remote.php/webdav";
+	/** @var boolean*/
+	private $usingOldDavPath = true;
 	/** @var ResponseInterface */
 	private $response;
 
@@ -51,9 +53,39 @@ trait WebDav {
 	}
 
 	/**
-	 * @return string
+	 * @Given /^using old dav path$/
 	 */
+	public function usingOldDavPath() {
+		$this->davPath = "remote.php/webdav";
+		$this->usingOldDavPath = true;
+	}
+
+	/**
+	 * @Given /^using new dav path$/
+	 */
+	public function usingNewDavPath() {
+		$this->davPath = "remote.php/dav";
+		$this->usingOldDavPath = false;
+	}
+
+	/*public function getDavFilesPath($user){
+		if ($this->usingOldDavPath === true){
+			return $this->davPath . '/';
+		} else {
+			return $this->davPath . '/files/' . $user . '/';
+		}
+	}*/
+
+	public function getDavFilesPath($user){
+		if ($this->usingOldDavPath === true){
+			return $this->davPath;
+		} else {
+			return $this->davPath . '/files/' . $user;
+		}
+	}
+
 	public function getFilesPath($user) {
+		$basePath = '';
 		if ($this->davPath === "remote.php/dav") {
 			$basePath = '/files/' . $user . '/';
 		} else {
@@ -63,7 +95,7 @@ trait WebDav {
 	}
 
 	public function makeDavRequest($user, $method, $path, $headers, $body = null){
-		$fullUrl = substr($this->baseUrl, 0, -4) . $this->davPath . "$path";
+		$fullUrl = substr($this->baseUrl, 0, -4) . $this->getDavFilesPath($user) . "$path";
 		$client = new GClient();
 		$options = [];
 		if ($user === 'admin') {
@@ -93,7 +125,7 @@ trait WebDav {
 	 * @param string $fileDestination
 	 */
 	public function userMovedFile($user, $entry, $fileSource, $fileDestination){
-		$fullUrl = substr($this->baseUrl, 0, -4) . $this->davPath;
+		$fullUrl = substr($this->baseUrl, 0, -4) . $this->getDavFilesPath($user);
 		$headers['Destination'] = $fullUrl . $fileDestination;
 		$this->response = $this->makeDavRequest($user, "MOVE", $fileSource, $headers);
 		PHPUnit_Framework_Assert::assertEquals(201, $this->response->getStatusCode());
@@ -106,7 +138,7 @@ trait WebDav {
 	 * @param string $fileDestination
 	 */
 	public function userMovesFile($user, $entry, $fileSource, $fileDestination){
-		$fullUrl = substr($this->baseUrl, 0, -4) . $this->davPath;
+		$fullUrl = substr($this->baseUrl, 0, -4) . $this->getDavFilesPath($user);
 		$headers['Destination'] = $fullUrl . $fileDestination;
 		$this->response = $this->makeDavRequest($user, "MOVE", $fileSource, $headers);
 	}
@@ -118,7 +150,7 @@ trait WebDav {
 	 * @param string $fileDestination
 	 */
 	public function userCopiesFileTo($user, $fileSource, $fileDestination) {
-		$fullUrl = substr($this->baseUrl, 0, -4) . $this->davPath;
+		$fullUrl = substr($this->baseUrl, 0, -4) . $this->getDavFilesPath($user);
 		$headers['Destination'] = $fullUrl . $fileDestination;
 		try {
 			$this->response = $this->makeDavRequest($user, 'COPY', $fileSource, $headers);
@@ -369,7 +401,7 @@ trait WebDav {
 	}
 
 	public function makeSabrePath($user, $path) {
-		return $this->encodePath($this->davPath . $this->getFilesPath($user) . ltrim($path, '/'));
+		return $this->encodePath($this->getDavFilesPath($user));
 	}
 
 	public function getSabreClient($user) {
@@ -400,7 +432,7 @@ trait WebDav {
 			$elementRows = $expectedElements->getRows();
 			$elementsSimplified = $this->simplifyArray($elementRows);
 			foreach($elementsSimplified as $expectedElement) {
-				$webdavPath = "/" . $this->davPath . $expectedElement;
+				$webdavPath = "/" . $this->getDavFilesPath($user) . $expectedElement;
 				if (!array_key_exists($webdavPath,$elementList)){
 					PHPUnit_Framework_Assert::fail("$webdavPath" . " is not in propfind answer");
 				}
@@ -476,7 +508,7 @@ trait WebDav {
 	 */
 	public function userCreatedAFolder($user, $destination) {
 		try {
-			$this->response = $this->makeDavRequest($user, "MKCOL", $this->getFilesPath($user) . ltrim($destination, $this->getFilesPath($user)), []);
+			$this->response = $this->makeDavRequest($user, "MKCOL", $destination, []);
 		} catch (\GuzzleHttp\Exception\ServerException $e) {
 			// 4xx and 5xx responses cause an exception
 			$this->response = $e->getResponse();
@@ -524,7 +556,7 @@ trait WebDav {
 	public function userMovesNewChunkFileWithIdToMychunkedfile($user, $id, $dest)
 	{
 		$source = '/uploads/'.$user.'/'.$id.'/.file';
-		$destination = substr($this->baseUrl, 0, -4) . $this->davPath . '/files/'.$user.$dest;
+		$destination = substr($this->baseUrl, 0, -4) . $this->getDavFilesPath($user) . $dest;
 		$this->makeDavRequest($user, 'MOVE', $source, [
 			'Destination' => $destination
 		]);
@@ -586,7 +618,7 @@ trait WebDav {
 			];
 		}
 
-		$response = $client->proppatch($this->davPath . $this->getFilesPath($user) . ltrim($path, '/'), $properties, $folderDepth);
+		$response = $client->proppatch($this->getDavFilesPath($user), $properties, $folderDepth);
 		return $response;
 	}
 
