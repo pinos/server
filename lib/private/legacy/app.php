@@ -1335,30 +1335,8 @@ class OC_App {
 	 */
 	public static function parseAppInfo(array $data) {
 
-		// just modify the description if it is available
-		// otherwise this will create a $data element with an empty 'description'
-		if (isset($data['description'])) {
-			if (is_string($data['description'])) {
-				// sometimes the description contains line breaks and they are then also
-				// shown in this way in the app management which isn't wanted as HTML
-				// manages line breaks itself
-
-				// first of all we split on empty lines
-				$paragraphs = preg_split("!\n[[:space:]]*\n!mu", $data['description']);
-
-				$result = [];
-				foreach ($paragraphs as $value) {
-					// replace multiple whitespace (tabs, space, newlines) inside a paragraph
-					// with a single space - also trims whitespace
-					$result[] = trim(preg_replace('![[:space:]]+!mu', ' ', $value));
-				}
-
-				// join the single paragraphs with a empty line in between
-				$data['description'] = implode("\n\n", $result);
-
-			} else {
-				$data['description'] = '';
-			}
+		if (!isset($data['description'])) {
+			$data['description'] = '';
 		}
 
 		return $data;
