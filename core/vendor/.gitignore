@@ -1,12 +1,14 @@
 test/
 src/
 bower.json
+component.json
 .jshintrc
 .travis.yml
 CHANGELOG*
 Gemfile
 gruntfile.js
 Gruntfile.js
+Gulpfile.js
 Makefile
 package.json
 README*
@@ -142,3 +144,10 @@ base64/*min.js
 clipboard/**
 !clipboard/dist
 !clipboard/dist/clipboard.js
+
+#marked
+marked/bin
+marked/doc
+marked/index.js
+marked/lib
+marked/man
