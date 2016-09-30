@@ -10,6 +10,7 @@ vendor_script(
 	'core',
 	[
 		'handlebars/handlebars',
+		'marked/marked.min',
 		'select2/select2'
 	]
 );
@@ -75,7 +76,7 @@ script(
 	<div class="app-detailpage"></div>
 
 	<div class="app-description-container hidden">
-		<div class="app-description"><pre>{{description}}</pre></div>
+		<div class="app-description"><pre>{{{description}}}</pre></div>
 		<!--<div class="app-changed">{{changed}}</div>-->
 		{{#if documentation}}
 		<p class="documentation">

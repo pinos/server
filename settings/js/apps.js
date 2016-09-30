@@ -183,6 +183,9 @@ OC.Settings.Apps = OC.Settings.Apps || {
 			app.previewAsIcon = true;
 		}
 
+		// Parse markdown in app description
+		app.description = marked(app.description.trim());
+
 		var html = template(app);
 		if (selector) {
 			selector.html(html);
