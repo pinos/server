@@ -2152,7 +2152,7 @@ class UsersControllerTest extends \Test\TestCase {
 		$user->expects($this->once())
 			->method('getUID')
 			->will($this->returnValue('abc'));
-		$this->container['UserSession']
+		$this->userSession
 			->expects($this->once())
 			->method('getUser')
 			->will($this->returnValue($user));
@@ -2165,7 +2165,7 @@ class UsersControllerTest extends \Test\TestCase {
 			],
 			Http::STATUS_FORBIDDEN
 		);
-		$response = $this->container['UsersController']->disable('abc');
+		$response = $this->getController(true)->disable('abc');
 		$this->assertEquals($expectedResponse, $response);
 	}
 
@@ -2175,7 +2175,7 @@ class UsersControllerTest extends \Test\TestCase {
 		$user->expects($this->once())
 			->method('getUID')
 			->will($this->returnValue('def'));
-		$this->container['UserSession']
+		$this->userSession
 			->expects($this->exactly(2))
 			->method('getUser')
 			->will($this->returnValue($user));
@@ -2183,7 +2183,7 @@ class UsersControllerTest extends \Test\TestCase {
 			->disableOriginalConstructor()->getMock();
 		$user2->expects($this->never())
 			->method('setEnabled');
-		$this->container['UserManager']
+		$this->userManager
 			->expects($this->once())
 			->method('get')
 			->with('abc')
@@ -2193,12 +2193,11 @@ class UsersControllerTest extends \Test\TestCase {
 		$subadmin->expects($this->once())
 			->method('isUserAccessible')
 			->will($this->returnValue(false));
-		$this->container['GroupManager']
+		$this->groupManager
 			->expects($this->once())
 			->method('getSubAdmin')
 			->willReturn($subadmin);
 
-		$this->container['IsAdmin'] = false;
 		$expectedResponse = new DataResponse(
 			[
 				'status' => 'error',
@@ -2208,7 +2207,7 @@ class UsersControllerTest extends \Test\TestCase {
 			],
 			Http::STATUS_FORBIDDEN
 		);
-		$response = $this->container['UsersController']->disable('abc');
+		$response = $this->getController(false)->disable('abc');
 		$this->assertEquals($expectedResponse, $response);
 	}
 
@@ -2218,21 +2217,20 @@ class UsersControllerTest extends \Test\TestCase {
 		$user->expects($this->once())
 			->method('getUID')
 			->will($this->returnValue('def'));
-		$this->container['UserSession']
+		$this->userSession
 			->expects($this->exactly(1))
 			->method('getUser')
 			->will($this->returnValue($user));
-		$this->container['UserManager']
+		$this->userManager
 			->expects($this->once())
 			->method('get')
 			->with('abc')
 			->willReturn(null);
 
-		$this->container['GroupManager']
+		$this->groupManager
 			->expects($this->never())
 			->method('getSubAdmin');
 
-		$this->container['IsAdmin'] = true;
 		$expectedResponse = new DataResponse(
 			[
 				'status' => 'error',
@@ -2241,7 +2239,7 @@ class UsersControllerTest extends \Test\TestCase {
 				],
 			]
 		);
-		$response = $this->container['UsersController']->disable('abc');
+		$response = $this->getController(true)->disable('abc');
 		$this->assertEquals($expectedResponse, $response);
 	}
 
@@ -2251,11 +2249,11 @@ class UsersControllerTest extends \Test\TestCase {
 		$user->expects($this->once())
 			->method('getUID')
 			->will($this->returnValue('def'));
-		$this->container['UserSession']
+		$this->userSession
 			->expects($this->exactly(2))
 			->method('getUser')
 			->will($this->returnValue($user));
-		$this->container['UserManager']
+		$this->userManager
 			->expects($this->once())
 			->method('get')
 			->with('abc')
@@ -2265,12 +2263,11 @@ class UsersControllerTest extends \Test\TestCase {
 		$subadmin->expects($this->once())
 			->method('isUserAccessible')
 			->will($this->returnValue(true));
-		$this->container['GroupManager']
+		$this->groupManager
 			->expects($this->once())
 			->method('getSubAdmin')
 			->willReturn($subadmin);
 
-		$this->container['IsAdmin'] = false;
 		$expectedResponse = new DataResponse(
 			[
 				'status' => 'error',
@@ -2279,7 +2276,7 @@ class UsersControllerTest extends \Test\TestCase {
 				],
 			]
 		);
-		$response = $this->container['UsersController']->disable('abc');
+		$response = $this->getController(false)->disable('abc');
 		$this->assertEquals($expectedResponse, $response);
 	}
 
@@ -2289,7 +2286,7 @@ class UsersControllerTest extends \Test\TestCase {
 		$user->expects($this->once())
 			->method('getUID')
 			->will($this->returnValue('def'));
-		$this->container['UserSession']
+		$this->userSession
 			->expects($this->exactly(1))
 			->method('getUser')
 			->will($this->returnValue($user));
@@ -2298,17 +2295,16 @@ class UsersControllerTest extends \Test\TestCase {
 		$user2->expects($this->once())
 			->method('setEnabled')
 			->with(false);
-		$this->container['UserManager']
+		$this->userManager
 			->expects($this->once())
 			->method('get')
 			->with('abc')
 			->willReturn($user2);
 
-		$this->container['GroupManager']
+		$this->groupManager
 			->expects($this->never())
 			->method('getSubAdmin');
 
-		$this->container['IsAdmin'] = true;
 		$expectedResponse = new DataResponse(
 			[
 				'status' => 'success',
@@ -2318,7 +2314,7 @@ class UsersControllerTest extends \Test\TestCase {
 				],
 			]
 		);
-		$response = $this->container['UsersController']->disable('abc');
+		$response = $this->getController(true)->disable('abc');
 		$this->assertEquals($expectedResponse, $response);
 	}
 
@@ -2328,7 +2324,7 @@ class UsersControllerTest extends \Test\TestCase {
 		$user->expects($this->once())
 			->method('getUID')
 			->will($this->returnValue('def'));
-		$this->container['UserSession']
+		$this->userSession
 			->expects($this->exactly(2))
 			->method('getUser')
 			->will($this->returnValue($user));
@@ -2336,7 +2332,7 @@ class UsersControllerTest extends \Test\TestCase {
 			->disableOriginalConstructor()->getMock();
 		$user2->expects($this->once())
 			->method('setEnabled');
-		$this->container['UserManager']
+		$this->userManager
 			->expects($this->once())
 			->method('get')
 			->with('abc')
@@ -2346,12 +2342,11 @@ class UsersControllerTest extends \Test\TestCase {
 		$subadmin->expects($this->once())
 			->method('isUserAccessible')
 			->will($this->returnValue(true));
-		$this->container['GroupManager']
+		$this->groupManager
 			->expects($this->once())
 			->method('getSubAdmin')
 			->willReturn($subadmin);
 
-		$this->container['IsAdmin'] = false;
 		$expectedResponse = new DataResponse(
 			[
 				'status' => 'success',
@@ -2361,7 +2356,7 @@ class UsersControllerTest extends \Test\TestCase {
 				],
 			]
 		);
-		$response = $this->container['UsersController']->disable('abc');
+		$response = $this->getController(false)->disable('abc');
 		$this->assertEquals($expectedResponse, $response);
 	}
 
@@ -2371,7 +2366,7 @@ class UsersControllerTest extends \Test\TestCase {
 		$user->expects($this->once())
 			->method('getUID')
 			->will($this->returnValue('abc'));
-		$this->container['UserSession']
+		$this->userSession
 			->expects($this->once())
 			->method('getUser')
 			->will($this->returnValue($user));
@@ -2384,7 +2379,7 @@ class UsersControllerTest extends \Test\TestCase {
 			],
 			Http::STATUS_FORBIDDEN
 		);
-		$response = $this->container['UsersController']->enable('abc');
+		$response = $this->getController(true)->enable('abc');
 		$this->assertEquals($expectedResponse, $response);
 	}
 
@@ -2394,7 +2389,7 @@ class UsersControllerTest extends \Test\TestCase {
 		$user->expects($this->once())
 			->method('getUID')
 			->will($this->returnValue('def'));
-		$this->container['UserSession']
+		$this->userSession
 			->expects($this->exactly(2))
 			->method('getUser')
 			->will($this->returnValue($user));
@@ -2402,7 +2397,7 @@ class UsersControllerTest extends \Test\TestCase {
 			->disableOriginalConstructor()->getMock();
 		$user2->expects($this->never())
 			->method('setEnabled');
-		$this->container['UserManager']
+		$this->userManager
 			->expects($this->once())
 			->method('get')
 			->with('abc')
@@ -2412,12 +2407,11 @@ class UsersControllerTest extends \Test\TestCase {
 		$subadmin->expects($this->once())
 			->method('isUserAccessible')
 			->will($this->returnValue(false));
-		$this->container['GroupManager']
+		$this->groupManager
 			->expects($this->once())
 			->method('getSubAdmin')
 			->willReturn($subadmin);
 
-		$this->container['IsAdmin'] = false;
 		$expectedResponse = new DataResponse(
 			[
 				'status' => 'error',
@@ -2427,7 +2421,7 @@ class UsersControllerTest extends \Test\TestCase {
 			],
 			Http::STATUS_FORBIDDEN
 		);
-		$response = $this->container['UsersController']->enable('abc');
+		$response = $this->getController(false)->enable('abc');
 		$this->assertEquals($expectedResponse, $response);
 	}
 
@@ -2437,21 +2431,20 @@ class UsersControllerTest extends \Test\TestCase {
 		$user->expects($this->once())
 			->method('getUID')
 			->will($this->returnValue('def'));
-		$this->container['UserSession']
+		$this->userSession
 			->expects($this->exactly(1))
 			->method('getUser')
 			->will($this->returnValue($user));
-		$this->container['UserManager']
+		$this->userManager
 			->expects($this->once())
 			->method('get')
 			->with('abc')
 			->willReturn(null);
 
-		$this->container['GroupManager']
+		$this->groupManager
 			->expects($this->never())
 			->method('getSubAdmin');
 
-		$this->container['IsAdmin'] = true;
 		$expectedResponse = new DataResponse(
 			[
 				'status' => 'error',
@@ -2460,7 +2453,7 @@ class UsersControllerTest extends \Test\TestCase {
 				],
 			]
 		);
-		$response = $this->container['UsersController']->enable('abc');
+		$response = $this->getController(true)->enable('abc');
 		$this->assertEquals($expectedResponse, $response);
 	}
 
@@ -2470,11 +2463,11 @@ class UsersControllerTest extends \Test\TestCase {
 		$user->expects($this->once())
 			->method('getUID')
 			->will($this->returnValue('def'));
-		$this->container['UserSession']
+		$this->userSession
 			->expects($this->exactly(2))
 			->method('getUser')
 			->will($this->returnValue($user));
-		$this->container['UserManager']
+		$this->userManager
 			->expects($this->once())
 			->method('get')
 			->with('abc')
@@ -2484,12 +2477,11 @@ class UsersControllerTest extends \Test\TestCase {
 		$subadmin->expects($this->once())
 			->method('isUserAccessible')
 			->will($this->returnValue(true));
-		$this->container['GroupManager']
+		$this->groupManager
 			->expects($this->once())
 			->method('getSubAdmin')
 			->willReturn($subadmin);
 
-		$this->container['IsAdmin'] = false;
 		$expectedResponse = new DataResponse(
 			[
 				'status' => 'error',
@@ -2498,7 +2490,7 @@ class UsersControllerTest extends \Test\TestCase {
 				],
 			]
 		);
-		$response = $this->container['UsersController']->enable('abc');
+		$response = $this->getController(false)->enable('abc');
 		$this->assertEquals($expectedResponse, $response);
 	}
 
@@ -2508,7 +2500,7 @@ class UsersControllerTest extends \Test\TestCase {
 		$user->expects($this->once())
 			->method('getUID')
 			->will($this->returnValue('def'));
-		$this->container['UserSession']
+		$this->userSession
 			->expects($this->exactly(1))
 			->method('getUser')
 			->will($this->returnValue($user));
@@ -2516,17 +2508,16 @@ class UsersControllerTest extends \Test\TestCase {
 			->disableOriginalConstructor()->getMock();
 		$user2->expects($this->once())
 			->method('setEnabled');
-		$this->container['UserManager']
+		$this->userManager
 			->expects($this->once())
 			->method('get')
 			->with('abc')
 			->willReturn($user2);
 
-		$this->container['GroupManager']
+		$this->groupManager
 			->expects($this->never())
 			->method('getSubAdmin');
 
-		$this->container['IsAdmin'] = true;
 		$expectedResponse = new DataResponse(
 			[
 				'status' => 'success',
@@ -2536,7 +2527,7 @@ class UsersControllerTest extends \Test\TestCase {
 				],
 			]
 		);
-		$response = $this->container['UsersController']->enable('abc');
+		$response = $this->getController(true)->enable('abc');
 		$this->assertEquals($expectedResponse, $response);
 	}
 
@@ -2546,7 +2537,7 @@ class UsersControllerTest extends \Test\TestCase {
 		$user->expects($this->once())
 			->method('getUID')
 			->will($this->returnValue('def'));
-		$this->container['UserSession']
+		$this->userSession
 			->expects($this->exactly(2))
 			->method('getUser')
 			->will($this->returnValue($user));
@@ -2555,7 +2546,7 @@ class UsersControllerTest extends \Test\TestCase {
 		$user2->expects($this->once())
 			->method('setEnabled')
 			->with(true);
-		$this->container['UserManager']
+		$this->userManager
 			->expects($this->once())
 			->method('get')
 			->with('abc')
@@ -2565,12 +2556,11 @@ class UsersControllerTest extends \Test\TestCase {
 		$subadmin->expects($this->once())
 			->method('isUserAccessible')
 			->will($this->returnValue(true));
-		$this->container['GroupManager']
+		$this->groupManager
 			->expects($this->once())
 			->method('getSubAdmin')
 			->willReturn($subadmin);
 
-		$this->container['IsAdmin'] = false;
 		$expectedResponse = new DataResponse(
 			[
 				'status' => 'success',
@@ -2580,7 +2570,7 @@ class UsersControllerTest extends \Test\TestCase {
 				],
 			]
 		);
-		$response = $this->container['UsersController']->enable('abc');
+		$response = $this->getController(false)->enable('abc');
 		$this->assertEquals($expectedResponse, $response);
 	}
 }
