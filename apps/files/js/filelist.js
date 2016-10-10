@@ -455,7 +455,7 @@
 		 * Displays the details view for the given file and
 		 * selects the given tab
 		 *
-		 * @param {string} fileName file name for which to show details
+		 * @param {string|OCA.Files.FileInfoModel} fileName file name or FileInfoModel for which to show details
 		 * @param {string} [tabId] optional tab id to select
 		 */
 		showDetailsView: function(fileName, tabId) {
@@ -469,7 +469,7 @@
 		/**
 		 * Update the details view to display the given file
 		 *
-		 * @param {string} fileName file name from the current list
+		 * @param {string|OCA.Files.FileInfoModel} fileName file name from the current list or a FileInfoModel object
 		 * @param {boolean} [show=true] whether to open the sidebar if it was closed
 		 */
 		_updateDetailsView: function(fileName, show) {
@@ -500,8 +500,8 @@
 				OC.Apps.showAppSidebar(this._detailsView.$el);
 			}
 
-			if (_.isObject(fileName)) {
-				var model = new OCA.Files.FileInfoModel(fileName);
+			if (fileName instanceof OCA.Files.FileInfoModel) {
+				var model = fileName;
 			} else {
 				var $tr = this.findFileEl(fileName);
 				var model = this.getModelForFile($tr);
@@ -1962,7 +1962,7 @@
 
 			function updateInList(fileInfo) {
 				self.updateRow(tr, fileInfo);
-				self._updateDetailsView(fileInfo.name, false);
+				self._updateDetailsView(fileInfo, false);
 			}
 
 			// TODO: too many nested blocks, move parts into functions
