@@ -41,6 +41,15 @@ class CalendarObject extends \Sabre\CalDAV\CalendarObject {
 		return $data;
 	}
 
+	function restore() {
+		$this->caldavBackend->restoreCalendarObject($this->calendarInfo['id'], $this->objectData['uri']);
+	}
+
+	function purge() {
+		$this->caldavBackend->purgeCalendarObject($this->calendarInfo['id'], $this->objectData['uri']);
+	}
+
+
 	private function isShared() {
 		return isset($this->calendarInfo['{http://owncloud.org/ns}owner-principal']);
 	}

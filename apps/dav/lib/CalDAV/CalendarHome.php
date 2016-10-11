@@ -28,10 +28,12 @@ use Sabre\CalDAV\Backend\SchedulingSupport;
 use Sabre\CalDAV\Backend\SubscriptionSupport;
 use Sabre\CalDAV\Schedule\Inbox;
 use Sabre\CalDAV\Schedule\Outbox;
-use Sabre\CalDAV\Subscriptions\Subscription;
 use Sabre\DAV\Exception\NotFound;
 
 class CalendarHome extends \Sabre\CalDAV\CalendarHome {
+
+	/** @var boolean */
+	protected $excludeDeleted=false;
 
 	/** @var \OCP\IL10N */
 	private $l10n;
@@ -45,7 +47,8 @@ class CalendarHome extends \Sabre\CalDAV\CalendarHome {
 	 * @inheritdoc
 	 */
 	function getChildren() {
-		$calendars = $this->caldavBackend->getCalendarsForUser($this->principalInfo['uri']);
+		/** @var \OCA\DAV\CalDAV\CalDavBackend $this->caldavBackend */
+		$calendars = $this->caldavBackend->getCalendarsForUser($this->principalInfo['uri'], $this->excludeDeleted);
 		$objects = [];
 		foreach ($calendars as $calendar) {
 			$objects[] = new Calendar($this->caldavBackend, $calendar, $this->l10n);
@@ -103,5 +106,12 @@ class CalendarHome extends \Sabre\CalDAV\CalendarHome {
 		}
 
 		throw new NotFound('Node with name \'' . $name . '\' could not be found');
+	}
+
+	/**
+	 * show deleted calendars in this request
+	 */
+	function showDeleted() {
+		$this->excludeDeleted = false;
 	}
 }
