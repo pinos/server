@@ -24,7 +24,7 @@
  */
 namespace OCA\DAV\AppInfo;
 
-use OCA\DAV\CalDAV\Activity;
+use OCA\DAV\CalDAV\Activity\Extension;
 use OCA\DAV\CalDAV\BirthdayService;
 use OCA\DAV\CardDAV\ContactsManager;
 use OCA\DAV\CardDAV\SyncService;
@@ -86,7 +86,7 @@ class Application extends App {
 
 		$aM = $this->getContainer()->getServer()->getActivityManager();
 		$aM->registerExtension(function() {
-			return $this->getContainer()->query(Activity::class);
+			return $this->getContainer()->query(Extension::class);
 		});
 	}
 
