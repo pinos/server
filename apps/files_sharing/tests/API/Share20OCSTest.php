@@ -25,6 +25,7 @@ namespace OCA\Files_Sharing\Tests\API;
 
 use OCP\AppFramework\Http\DataResponse;
 use OCP\AppFramework\OCS\OCSNotFoundException;
+use OCP\Files\File;
 use OCP\Files\Folder;
 use OCP\Files\Storage;
 use OCP\IL10N;
@@ -38,6 +39,7 @@ use OCP\IUser;
 use OCP\Files\IRootFolder;
 use OCP\Lock\LockedException;
 use OCP\Share;
+use OCP\Share\IShare;
 
 /**
  * Class Share20OCSTest
@@ -936,7 +938,7 @@ class Share20OCSTest extends \Test\TestCase {
 	 * @expectedExceptionMessage Public upload is only possible for publicly shared folders
 	 */
 	public function testCreateShareLinkPublicUploadFile() {
-		$path = $this->createMock(Folder::class);
+		$path = $this->createMock(File::class);
 		$storage = $this->createMock(Storage::class);
 
 		$storage->method('instanceOfStorage')
