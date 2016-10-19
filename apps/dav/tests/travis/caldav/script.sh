@@ -5,13 +5,11 @@ SCRIPTPATH=`dirname $SCRIPT`
 # start the server
 php -S 127.0.0.1:8888 -t "$SCRIPTPATH/../../../../.." &
 
-sleep 30
+sleep 2
 
 # run the tests
 cd "$SCRIPTPATH/CalDAVTester"
-PYTHONPATH="$SCRIPTPATH/pycalendar/src" python testcaldav.py --print-details-onfail --basedir "$SCRIPTPATH/../caldavtest/" -o cdt.txt \
-	"CalDAV/current-user-principal.xml" \
-	"CalDAV/sync-report.xml" \
+PYTHONPATH="$SCRIPTPATH/pycalendar/src" python2 testcaldav.py --print-details-onfail --basedir "$SCRIPTPATH/../caldavtest/" -o cdt.txt \
 	"CalDAV/sharing-calendars.xml"
 
 RESULT=$?
