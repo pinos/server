@@ -522,7 +522,7 @@ var OCdialogs = {
 						.prop('checked', true)
 						.prop('disabled', true);
 				$originalDiv.find('.message')
-					.text(t('core','read-only'))
+					.text(t('core','read-only'));
 			}
 		};
 		//var selection = controller.getSelection(data.originalFiles);

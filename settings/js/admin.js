@@ -132,9 +132,9 @@ $(document).ready(function(){
 			data,
 			function(result){
 				if(result.status === 'success'){
-					OC.msg.finishedSuccess('#publicShareDisclaimerStatus', t('core', 'Saved'))
+					OC.msg.finishedSuccess('#publicShareDisclaimerStatus', t('core', 'Saved'));
 				} else {
-					OC.msg.finishedError('#publicShareDisclaimerStatus', t('core', 'Not saved'))
+					OC.msg.finishedError('#publicShareDisclaimerStatus', t('core', 'Not saved'));
 				}
 			},
 			'json'
