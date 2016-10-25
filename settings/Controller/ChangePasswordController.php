@@ -130,6 +130,7 @@ class ChangePasswordController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 * @PasswordConfirmationRequired
 	 *
 	 * @param string $username
 	 * @param string $password
