@@ -31,6 +31,7 @@
 namespace OC\Files;
 
 use OCP\Files\Cache\ICacheEntry;
+use OCP\Files\IHomeStorage;
 use OCP\IUser;
 
 class FileInfo implements \OCP\Files\FileInfo, \ArrayAccess {
@@ -289,7 +290,11 @@ class FileInfo implements \OCP\Files\FileInfo, \ArrayAccess {
 	}
 
 	public function isMounted() {
-		$sid = $this->getStorage()->getId();
+		$storage = $this->getStorage();
+		if ($storage->instanceOfStorage('\OCP\Files\IHomeStorage')) {
+			return false;
+		}
+		$sid = $storage->getId();
 		if (!is_null($sid)) {
 			$sid = explode(':', $sid);
 			return ($sid[0] !== 'home' and $sid[0] !== 'shared');
