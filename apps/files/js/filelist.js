@@ -2154,7 +2154,7 @@
 
 			self.filesClient.putFileContents(
 					targetPath,
-					'',
+					' ',
 					{
 						contentType: 'text/plain',
 						overwrite: true
