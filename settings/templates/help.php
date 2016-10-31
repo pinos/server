@@ -28,8 +28,7 @@
 
 	<?php if($_['admin']) { ?>
 		<li>
-			<a href="https://github.com/nextcloud/server/blob/master/CONTRIBUTING.md"
-				target="_blank" rel="noreferrer">
+			<a href="https://nextcloud.com/support/" target="_blank" rel="noreferrer">
 				<?php p($l->t('Issue tracker')); ?> ↗
 			</a>
 		</li>
